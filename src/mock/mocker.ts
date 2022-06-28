@@ -1,5 +1,5 @@
 import cuid from 'cuid'
-import * as PUPPET  from 'wechaty-puppet'
+import * as PUPPET  from '@juzi/wechaty-puppet'
 
 import type { PuppetMock } from '../puppet-mock.js'
 import { log } from '../config.js'

@@ -1,7 +1,7 @@
 import faker from 'faker'
 import cuid  from 'cuid'
 
-import * as PUPPET from 'wechaty-puppet'
+import * as PUPPET from '@juzi/wechaty-puppet'
 import {
   FileBox,
 }               from 'file-box'

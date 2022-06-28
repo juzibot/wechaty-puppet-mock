@@ -1,5 +1,5 @@
 // import { Attachment } from './types'
-import * as PUPPET from 'wechaty-puppet'
+import * as PUPPET from '@juzi/wechaty-puppet'
 import type {
   FileBoxInterface,
 }           from 'file-box'

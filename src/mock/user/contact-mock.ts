@@ -1,6 +1,6 @@
 import cuid                             from 'cuid'
 import * as path                        from 'path'
-import * as PUPPET                      from 'wechaty-puppet'
+import * as PUPPET                      from '@juzi/wechaty-puppet'
 import { FileBox, FileBoxInterface }    from 'file-box'
 
 import { log }    from '../../config.js'

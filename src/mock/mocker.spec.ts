@@ -9,8 +9,8 @@ import {
   // UrlLink,
   WechatyBuilder,
   // MiniProgram,
-}                       from 'wechaty'
-import * as PUPPET  from 'wechaty-puppet'
+}                       from '@juzi/wechaty'
+import * as PUPPET  from '@juzi/wechaty-puppet'
 import {
   FileBox,
 }                 from 'file-box'

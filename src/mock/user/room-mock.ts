@@ -1,4 +1,4 @@
-import type * as PUPPET from 'wechaty-puppet'
+import type * as PUPPET from '@juzi/wechaty-puppet'
 
 import type { Mocker } from '../mocker.js'
 import { log } from '../../config.js'

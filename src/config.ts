@@ -3,7 +3,7 @@ import {
 }             from 'file-box'
 import {
   log,
-}             from 'wechaty-puppet'
+}             from '@juzi/wechaty-puppet'
 
 import { packageJson } from './package-json.js'
 

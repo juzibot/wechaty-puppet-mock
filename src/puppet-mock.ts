@@ -18,7 +18,7 @@
  */
 import path from 'path'
 
-import * as PUPPET  from 'wechaty-puppet'
+import * as PUPPET  from '@juzi/wechaty-puppet'
 import {
   FileBox,
   FileBoxInterface,
