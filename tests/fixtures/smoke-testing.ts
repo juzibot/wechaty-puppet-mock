@@ -3,7 +3,7 @@
 import {
   PuppetMock,
   VERSION,
-}                 from 'wechaty-puppet-mock'
+}                 from '@juzi/wechaty-puppet-mock'
 
 async function main () {
   const puppet = new PuppetMock()
