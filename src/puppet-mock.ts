@@ -273,6 +273,25 @@ class PuppetMock extends PUPPET.Puppet {
     }
   }
 
+  override async messageChannel (messageId: string): Promise<PUPPET.payloads.Channel> {
+    log.verbose('PuppetMock', 'messageChannel(%s)', messageId)
+    // const attachment = this.mocker.MockMessage.loadAttachment(messageId)
+    // if (attachment instanceof MiniProgram) {
+    //   return attachment.payload
+    // }
+    return {
+      avatar: `mock avatar for ${messageId}`,
+      coverUrl: `mock coverUrl for ${messageId}`,
+      desc: `mock desc for ${messageId}`,
+      extras: `mock extras for ${messageId}`,
+      feedType: 4,
+      nickname: `mock nickname for ${messageId}`,
+      thumbUrl: `mock thumbUrl for ${messageId}`,
+      url: `mock url for ${messageId}`,
+    }
+
+  }
+
   override async messageRawPayloadParser (payload: PUPPET.payloads.Message) { return payload }
   override async messageRawPayload (id: string): Promise<PUPPET.payloads.Message> {
     log.verbose('PuppetMock', 'messageRawPayload(%s)', id)
@@ -351,6 +370,13 @@ class PuppetMock extends PUPPET.Puppet {
     log.verbose('PuppetMock', 'messageSendMiniProgram(%s, %s)', conversationId, JSON.stringify(miniProgramPayload))
     // const miniProgram = new MiniProgram(miniProgramPayload)
     // return this.messageSend(conversationId, miniProgram)
+  }
+
+  override async messageSendChannel (
+    conversationId: string,
+    miniProgramPayload: PUPPET.payloads.Channel,
+  ): Promise<void> {
+    log.verbose('PuppetMock', 'messageSendChannel(%s, %s)', conversationId, JSON.stringify(miniProgramPayload))
   }
 
   override async messageForward (

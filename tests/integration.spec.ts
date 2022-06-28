@@ -4,10 +4,10 @@ import { test }  from 'tstest'
 
 import type {
   Message,
-}                 from 'wechaty'
+}                 from '@juzi/wechaty'
 import {
   WechatyBuilder,
-}                 from 'wechaty'
+}                 from '@juzi/wechaty'
 import type {
   ContactMock,
   RoomMock,
