@@ -179,6 +179,15 @@ class PuppetMock extends PUPPET.Puppet {
     return this.mocker.contactPayload(id)
   }
 
+  override async batchContactRawPayload (contactIds: string[]): Promise<Map<string, PUPPET.payloads.Contact>> {
+    log.verbose('PuppetMock', 'batchContactRawPayload(%d)', contactIds.length)
+    const payloadMap = new Map<string, PUPPET.payloads.Contact>()
+    for (const contactId of contactIds) {
+      payloadMap.set(contactId, await this.mocker.contactPayload(contactId))
+    }
+    return payloadMap
+  }
+
   /**
    *
    * Conversation
@@ -398,6 +407,15 @@ class PuppetMock extends PUPPET.Puppet {
   override async roomRawPayload (id: string): Promise<PUPPET.payloads.Room> {
     log.verbose('PuppetMock', 'roomRawPayload(%s)', id)
     return this.mocker.roomPayload(id)
+  }
+
+  override async batchRoomRawPayload (roomIds: string[]): Promise<Map<string, PUPPET.payloads.Room>> {
+    log.verbose('PuppetMock', 'batchRoomRawPayload(%d)', roomIds.length)
+    const payloadMap = new Map<string, PUPPET.payloads.Room>()
+    for (const roomId of roomIds) {
+      payloadMap.set(roomId, await this.mocker.roomPayload(roomId))
+    }
+    return payloadMap
   }
 
   override async roomList (): Promise<string[]> {
