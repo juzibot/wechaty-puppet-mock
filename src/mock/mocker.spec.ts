@@ -32,7 +32,7 @@ function createFixture () {
   const mocker = new Mocker()
   const puppet = new PuppetMock({ mocker })
 
-  const [user, mike, mary] = mocker.createContacts(3) as [ContactMock, ContactMock, ContactMock]
+  const [ user, mike, mary ] = mocker.createContacts(3) as [ ContactMock, ContactMock, ContactMock ]
   const room = mocker.createRoom({
     memberIdList: [
       mike.id,
@@ -80,10 +80,6 @@ test('Mocker.scan()', async t => {
   }         = createFixture()
 
   const QR_CODE = 'https://github.com/wechaty'
-  const EXPECTED_PAYLOAD: PUPPET.payloads.EventScan = {
-    qrcode: QR_CODE,
-    status: PUPPET.types.ScanStatus.Waiting,
-  }
 
   const sandbox = sinon.createSandbox()
   const spy = sandbox.spy()
@@ -93,7 +89,11 @@ test('Mocker.scan()', async t => {
   mocker.scan(QR_CODE, PUPPET.types.ScanStatus.Waiting)
 
   t.ok(spy.calledOnce, 'should received the scan event')
-  t.ok(spy.calledWith(EXPECTED_PAYLOAD), 'should received expected QR CODE')
+  t.ok(spy.calledWith(sinon.match({
+    qrcode   : QR_CODE,
+    status   : PUPPET.types.ScanStatus.Waiting,
+    timestamp: sinon.match.number,
+  })), 'should received expected QR CODE')
 
   await puppet.stop()
 })

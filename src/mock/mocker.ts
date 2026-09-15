@@ -107,7 +107,7 @@ class Mocker {
   randomContact (): undefined | ContactMock {
     log.verbose('Mocker', 'randomContact()')
 
-    const contactIdList = [...this.cacheContactPayload.keys()]
+    const contactIdList = [ ...this.cacheContactPayload.keys() ]
 
     if (contactIdList.length <= 0) {
       return
@@ -126,7 +126,7 @@ class Mocker {
   randomRoom (): undefined | RoomMock {
     log.verbose('Mocker', 'randomRoom()')
 
-    const roomIdList = [...this.cacheRoomPayload.keys()]
+    const roomIdList = [ ...this.cacheRoomPayload.keys() ]
 
     if (roomIdList.length <= 0) {
       return
@@ -145,8 +145,8 @@ class Mocker {
   randomConversation (): ContactMock | RoomMock {
     log.verbose('Mocker', 'randomConversation()')
 
-    const contactIdList = [...this.cacheContactPayload.keys()]
-    const roomIdList    = [...this.cacheRoomPayload.keys()]
+    const contactIdList = [ ...this.cacheContactPayload.keys() ]
+    const roomIdList    = [ ...this.cacheRoomPayload.keys() ]
 
     const total = contactIdList.length + roomIdList.length
     if (total <= 0) {
@@ -176,7 +176,11 @@ class Mocker {
    */
   scan (qrcode: string, status: PUPPET.types.ScanStatus = PUPPET.types.ScanStatus.Waiting) {
     log.verbose('Mocker', 'scan(%s, %s)', qrcode, status)
-    this.puppet.emit('scan', { qrcode, status })
+    this.puppet.emit('scan', {
+      qrcode,
+      status,
+      timestamp: Date.now(),
+    })
   }
 
   login (user: ContactMock) {

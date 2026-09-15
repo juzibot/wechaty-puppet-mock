@@ -39,8 +39,15 @@ import {
   // ContactMock,
 }                     from './mock/mod.js'
 
+import {
+  CallMock,
+  mediaDurationMsOf,
+}                     from './mock/call-mock.js'
+import type { CallMockTiming }       from './mock/call-mock.js'
+
 export type PuppetMockOptions = PUPPET.PuppetOptions & {
-  mocker?: Mocker,
+  callTiming?: CallMockTiming,
+  mocker?    : Mocker,
 }
 
 class PuppetMock extends PUPPET.Puppet {
@@ -86,6 +93,8 @@ class PuppetMock extends PUPPET.Puppet {
     if (this.loopTimer) {
       clearInterval(this.loopTimer)
     }
+
+    CallMock.destroyAll()
 
     setImmediate(() => this.mocker.stop())
   }
@@ -150,7 +159,7 @@ class PuppetMock extends PUPPET.Puppet {
 
   override async contactList (): Promise<string[]> {
     log.verbose('PuppetMock', 'contactList()')
-    return [...this.mocker.cacheContactPayload.keys()]
+    return [ ...this.mocker.cacheContactPayload.keys() ]
   }
 
   override async contactAvatar (contactId: string)                : Promise<FileBoxInterface>
@@ -402,7 +411,7 @@ class PuppetMock extends PUPPET.Puppet {
 
   override async roomList (): Promise<string[]> {
     log.verbose('PuppetMock', 'roomList()')
-    return [...this.mocker.cacheRoomPayload.keys()]
+    return [ ...this.mocker.cacheRoomPayload.keys() ]
   }
 
   override async roomDel (
@@ -560,30 +569,30 @@ class PuppetMock extends PUPPET.Puppet {
    * Tag
    *
    */
-  override async tagContactAdd (
-    tagId: string,
+  override async tagContactTagAdd (
+    tagIds     : string[],
+    contactIds : string[],
+  ): Promise<void> {
+    log.verbose('PuppetMock', 'tagContactTagAdd(%s, %s)', tagIds, contactIds)
+  }
+
+  override async tagContactTagRemove (
+    tagIds     : string[],
+    contactIds : string[],
+  ): Promise<void> {
+    log.verbose('PuppetMock', 'tagContactTagRemove(%s, %s)', tagIds, contactIds)
+  }
+
+  override async contactDelete (
     contactId: string,
   ): Promise<void> {
-    log.verbose('PuppetMock', 'tagContactAdd(%s)', tagId, contactId)
+    log.verbose('PuppetMock', 'contactDelete(%s)', contactId)
   }
 
-  override async tagContactRemove (
-    tagId: string,
+  override async tagContactTagList (
     contactId: string,
-  ): Promise<void> {
-    log.verbose('PuppetMock', 'tagContactRemove(%s)', tagId, contactId)
-  }
-
-  override async tagContactDelete (
-    tagId: string,
-  ): Promise<void> {
-    log.verbose('PuppetMock', 'tagContactDelete(%s)', tagId)
-  }
-
-  override async tagContactList (
-    contactId?: string,
   ): Promise<string[]> {
-    log.verbose('PuppetMock', 'tagContactList(%s)', contactId)
+    log.verbose('PuppetMock', 'tagContactTagList(%s)', contactId)
     return []
   }
 
@@ -660,7 +669,124 @@ class PuppetMock extends PUPPET.Puppet {
     }
   }
 
+  /**
+   *
+   * Call
+   *
+   */
+  override async callInvite (
+    contactIds : string[],
+    media      : PUPPET.types.CallMediaType,
+  ): Promise<string> {
+    log.verbose('PuppetMock', 'callInvite(%s, %s)', contactIds, media)
+    return this._callInviteCommon(contactIds, media)
+  }
+
+  override async callInviteWithMedia (
+    contactIds : string[],
+    file?      : FileBoxInterface,
+    options?   : PUPPET.types.CallInviteWithMediaOptions,
+  ): Promise<string> {
+    log.verbose('PuppetMock', 'callInviteWithMedia(%s, %s, %s)',
+      contactIds,
+      file?.name || '',
+      JSON.stringify(options) || '{}',
+    )
+
+    /**
+     * Align with the real puppet implementations: a media call without a
+     * file must opt in to the auto-hangup, otherwise it is equivalent
+     * to callInvite.
+     */
+    if (!file && options?.hangupOnFinish !== true) {
+      throw new Error('callInviteWithMedia: hangupOnFinish must be true when file is empty, otherwise it is equivalent to callInvite')
+    }
+
+    return this._callInviteCommon(
+      contactIds,
+      PUPPET.types.CallMediaType.Audio,
+      mediaDurationMsOf(file) ?? 0,
+    )
+  }
+
+  override async callAdd (
+    callId     : string,
+    contactIds : string[],
+  ): Promise<void> {
+    log.verbose('PuppetMock', 'callAdd(%s, %s)', callId, contactIds)
+    CallMock.load(callId).addParticipants(contactIds)
+  }
+
+  override async callMediaEndpoint (
+    callId: string,
+  ): Promise<PUPPET.payloads.CallMediaEndpoint> {
+    log.verbose('PuppetMock', 'callMediaEndpoint(%s)', callId)
+    CallMock.load(callId)
+    return {
+      protocol : 'mock',
+      token    : `mock-${callId}`,
+      url      : `wss://mock.invalid/call-media/${callId}`,
+    }
+  }
+
+  override async callAccept (callId: string): Promise<void> {
+    log.verbose('PuppetMock', 'callAccept(%s)', callId)
+    throw new Error('mock puppet has no incoming call simulation')
+  }
+
+  override async callReject (callId: string, reason?: string): Promise<void> {
+    log.verbose('PuppetMock', 'callReject(%s, %s)', callId, reason)
+    throw new Error('mock puppet has no incoming call simulation')
+  }
+
+  override async callCancel (callId: string): Promise<void> {
+    log.verbose('PuppetMock', 'callCancel(%s)', callId)
+    CallMock.load(callId).cancelByCaller()
+  }
+
+  override async callHangup (callId: string, reason?: string): Promise<void> {
+    log.verbose('PuppetMock', 'callHangup(%s, %s)', callId, reason)
+    CallMock.load(callId).hangupByCaller()
+  }
+
+  override async callRawPayload (callId: string): Promise<PUPPET.payloads.Call> {
+    log.verbose('PuppetMock', 'callRawPayload(%s)', callId)
+    return CallMock.load(callId).payload
+  }
+
+  override async callRawPayloadParser (payload: PUPPET.payloads.Call): Promise<PUPPET.payloads.Call> {
+    log.verbose('PuppetMock', 'callRawPayloadParser(%s)', payload.id)
+    return payload
+  }
+
+  protected async _callInviteCommon (
+    contactIds     : string[],
+    media          : PUPPET.types.CallMediaType,
+    mediaDurationMs?: number,
+  ): Promise<string> {
+    log.verbose('PuppetMock', '_callInviteCommon(%s, %s, %s)', contactIds, media, mediaDurationMs)
+
+    if (!this.isLoggedIn) {
+      throw new Error('not logged in')
+    }
+
+    if (contactIds.length !== 1) {
+      throw new Error('mock puppet supports 1v1 call only: exactly one contactId is required')
+    }
+
+    const call = CallMock.create({
+      calleeId        : contactIds[0]!,
+      media,
+      mediaDurationMs,
+      puppet          : this,
+      timing          : this.options.callTiming,
+    })
+    call.startOutbound()
+    return call.id
+  }
+
 }
 
+export type { CallMockTiming }
 export { PuppetMock }
 export default PuppetMock

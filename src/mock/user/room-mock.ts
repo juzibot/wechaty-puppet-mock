@@ -18,6 +18,7 @@ class RoomMock extends RoomEventEmitter {
   static get mocker (): Mocker { throw new Error('This class can not be used directory. See: https://github.com/wechaty/wechaty/issues/2027') }
   get mocker       (): Mocker { throw new Error('This class can not be used directory. See: https://github.com/wechaty/wechaty/issues/2027') }
 
+  /* eslint no-use-before-define: 0 */
   protected static [POOL]: undefined | Map<string, RoomMock>
 
   protected static get pool () {
